@@ -1,20 +1,40 @@
 package cn.uptra.schoolwork.Controller;
 
+import cn.uptra.schoolwork.Model.R;
 import cn.uptra.schoolwork.Model.User;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import cn.uptra.schoolwork.Service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api/auth") // 前端接口
 public class LoginController {
+    @Autowired
+    private UserService userService;
 
+
+    /**
+     * 登录接口 （post请求，明文验证uid和密码）
+     * @param user 前端传递的uid + 密码
+     * @return 统一响应：成功返回用户信息，失败返回错误提示
+     */
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
-        // 这里可以添加实际的认证逻辑，例如检查用户名和密码是否正确
-        if ("admin".equals(user.getUsername()) && "password".equals(user.getPassword())) {
-            return "登录成功";
+    public R<User> login(@RequestBody User user) {
+        String username = user.getUsername();
+        String password = user.getPassword();
+        // 直接查询管理员用户
+        if (username.equals("admin") && password.equals("admin123")) {
+            return R.success();
+        }
+        // 从数据库查询登录用户
+        User dbUser = userService.getUserByUsername(username);
+        if (dbUser == null) {
+            return R.error("用户不存在");
+        }
+        else if (!dbUser.getPassword().equals(password)) {
+            return R.error("密码错误");
         } else {
-            return "用户名或密码错误";
+            return R.success(dbUser);
         }
     }
 }
