@@ -7,14 +7,212 @@
 
 ### 1. 项目总体结构
 
-本项目分为三大部分：
+```
+src/main/java/com/bookstore
+│
+├── common
+│   ├── exception           # 全局异常、自定义异常类
+│   ├── result              # 统一响应封装（R、ResultCode）
+│   ├── utils               # 工具类（JWT、Redis等）
+│   └── config              # CORS、MyBatisPlus、Swagger
+│
+├── security
+│   ├── jwt                 # Jwt 工具、Token 过滤器
+│   ├── handler             # 未登录/权限不足处理
+│   └── config              # SpringSecurity 配置
+│
+├── modules
+│   ├── user               # 用户模块（注册登录/用户信息/地址管理）
+│   │   ├── controller
+│   │   ├── service
+│   │   ├── service/impl
+│   │   ├── mapper
+│   │   └── entity
+│   │
+│   ├── book               # 图书模块（商品列表/分类/详情/评论）
+│   │   ├── controller
+│   │   ├── service
+│   │   ├── service/impl
+│   │   ├── mapper
+│   │   └── entity
+│   │
+│   ├── cart               # 购物车模块
+│   │   ├── controller
+│   │   ├── service
+│   │   ├── service/impl
+│   │   ├── mapper
+│   │   └── entity
+│   │
+│   ├── order              # 订单模块（提交订单 / 订单详情 / 订单支付）
+│   │   ├── controller
+│   │   ├── service
+│   │   ├── service/impl
+│   │   ├── mapper
+│   │   └── entity
+│   │
+│   ├── admin              # 后台管理功能（图书增删查改、订单管理）
+│       ├── controller
+│       ├── service
+│       ├── service/impl
+│       ├── mapper
+│       └── entity
+│
+└── BookstoreApplication.java
 
-- **前端功能开发（第14章）**
-    
-- **后台管理系统开发（第15章）**
-    
-- **项目基础架构与数据库设计（第13章）**
-    
+```
+
+## 1️⃣ 用户模块（User Module）
+
+### 功能对应你的需求：
+
+- [ ] 注册登录（支持 JWT）
+
+- [x]  用户管理（修改资料）
+
+- [x]地址管理（收货地址：添加/编辑/删除/设默认）
+
+- [x]用户收藏（书籍收藏夹）
+
+### 文件示例
+
+`modules/user/controller/UserController.java 
+modules/user/controller/LoginController.java
+modules/user/controller/RegistController.java
+modules/user/service/UserService.java
+modoules/user/service/impl/UserServiceImpl.java
+modules/user/mapper/UserMapper.java 
+modules/user/entity/User.java 
+modules/user/entity/UserProfiles.java
+modules/user/entity/UserFavourites.java
+...`
+
+## 2️⃣ 图书模块（Book Module）
+
+### 功能对应：
+
+- [ ] 图书分类（list 分类树）
+
+- [ ] 图书 CRUD（后台管理）
+
+- [x] 图书详情（前台）
+
+- [x] 评论系统（书籍评论/评分）
+
+- [ ] 评论展示（分页显示评论）待完善  
+
+- [x] 图书搜索（按标题/作者/分类搜索）   
+
+
+`modules/book/controller/BookController.java modules/book/controller/CategoryController.java modules/book/controller/CommentController.java`
+
+---
+
+## 3️⃣ 购物车模块（Cart Module）
+
+### 功能： 实现增删改查
+
+- [x] 添加商品到购物车
+
+- [x] 修改数量
+
+- [x] 删除条目
+
+- [x] 获取用户购物车列表
+
+
+`modules/cart/controller/CartController.java`
+
+---
+
+## 4️⃣ 订单模块（Order Module）
+
+### 功能：
+
+- [ ] 生成订单（从购物车或立即购买）
+
+- [ ] 订单支付状态更新（模拟支付或支付宝沙箱）
+
+- [ ] 订单列表
+
+- [ ] 订单详情
+
+- [ ] 取消订单 / 确认收货
+
+
+`modules/order/controller/OrderController.java modules/order/entity/Order.java modules/order/entity/OrderItem.java`
+
+---
+
+## 5️⃣ 后台管理模块（Admin Module）
+
+包含：
+
+- [ ] 管理员登录（JWT 鉴权） 
+
+- [ ] 图书管理（CRUD、上下架）
+
+- [ ] 分类管理
+
+- [ ] 用户管理
+
+- [ ] 订单管理（查看/发货）
+
+- [ ] 数据统计（可视化：销量、销售额）
+
+
+`modules/admin/controller/AdminBookController.java modules/admin/controller/AdminOrderController.java modules/admin/controller/AdminUserController.java`
+
+---
+
+# ✅ 四、数据库表设计（与你的需求图对应）
+
+### 核心表：
+
+| 表名                | 描述    |
+|-------------------|-------|
+| `user`            | 用户表   |
+| `user_profiles`   | 用户详情表 |
+| `user_favourites` | 用户收藏表 |
+| `book`            | 图书信息  |
+| `reviews`         | 评论    |
+| `cart`            | 购物车   |
+| `order`           | 订单主表  |
+| `order_item`      | 订单明细  |
+| `admins`          | 后台管理员 |
+
+---
+
+# ✅ 五、SpringSecurity + JWT 鉴权结构
+
+```
+security/
+├── config/SecurityConfig.java
+├── jwt/JwtUtil.java
+├── jwt/JwtAuthenticationFilter.java
+├── handler/AccessDeniedHandler.java
+└── handler/AuthenticationEntryPoint.java
+
+```
+
+前台用户与后台管理员可采用**两套 JWT** 或在 token 内加角色字段。
+
+# ✅ 六、后端接口风格（RESTful 示例）
+
+### 获取图书列表
+
+`GET /api/book/list?page=1&size=10`
+
+### 登录
+
+`POST /api/auth/login`
+
+### 创建订单
+
+`POST /api/order/create`
+
+### 后台添加图书
+
+`POST /admin/book/add`
 
 ---
 
