@@ -1,4 +1,4 @@
-package cn.uptra.schoolwork.Model;
+package cn.uptra.schoolwork.common.result;
 
 import lombok.Data;
 

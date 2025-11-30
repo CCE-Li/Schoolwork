@@ -1,8 +1,8 @@
-package cn.uptra.schoolwork.Controller;
+package cn.uptra.schoolwork.modules.user.controller;
 
-import cn.uptra.schoolwork.Model.R;
-import cn.uptra.schoolwork.Model.User;
-import cn.uptra.schoolwork.Service.UserService;
+import cn.uptra.schoolwork.common.result.R;
+import cn.uptra.schoolwork.modules.user.entity.User;
+import cn.uptra.schoolwork.modules.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

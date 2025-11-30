@@ -1,10 +1,10 @@
-package cn.uptra.schoolwork.Controller;
+package cn.uptra.schoolwork.modules.user.controller;
 
 
-import cn.uptra.schoolwork.Model.R;
-import cn.uptra.schoolwork.Model.User;
-import cn.uptra.schoolwork.Service.Impl.UserServiceImpl;
-import cn.uptra.schoolwork.Service.UserService;
+import cn.uptra.schoolwork.modules.user.service.UserProfileService;
+import cn.uptra.schoolwork.modules.user.service.UserService;
+import cn.uptra.schoolwork.common.result.R;
+import cn.uptra.schoolwork.modules.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +17,9 @@ public class RegistController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserProfileService userProfileService;
+
 
     /**
      * 注册接口： （post请求，明文注册uid和密码）
@@ -26,13 +29,14 @@ public class RegistController {
     @PostMapping("/regist")
     public R<User> regist(@RequestBody User user) {
         String username = user.getUsername();
-        String password = user.getPassword();
         User dbUser = userService.getUserByUsername(username);
         if (dbUser != null) {
             return R.error("用户已存在");
         }
         else {
             userService.saveUser(user);
+            // 同时创建一个用户信息表的记录
+            userProfileService.setUserProfilesUid(user.getUid());
             return R.success(user);
         }
     }
